@@ -1,0 +1,80 @@
+132a133,138
+> #ifdef CONFIG_PROCESSOR_TRACE
+> #include "pt.h"
+> #include "pt/hypercall.h"
+> #endif
+> 
+> 
+1599a1606,1609
+> #ifdef CONFIG_PROCESSOR_TRACE
+> static int reload_requested;
+> char* loadvm_global = NULL;
+> #endif
+1687a1698,1706
+> #ifdef CONFIG_PROCESSOR_TRACE
+> static int qemu_reload_requested(void)
+> {
+>     int r = reload_requested;
+>     reload_requested = 0;
+>     return r;
+> }
+> #endif
+> 
+1738a1758,1764
+> #ifdef CONFIG_PROCESSOR_TRACE
+>     if (kvm_enabled()) {
+>         hypercall_unlock();
+>         pt_disable(qemu_get_cpu(0), false);
+>     }
+> #endif
+> 
+1747a1774,1787
+> #ifdef CONFIG_PROCESSOR_TRACE
+> void qemu_system_reload_request(void)
+> {
+>     if (kvm_enabled()) {
+>         hypercall_unlock();
+>         pt_disable(qemu_get_cpu(0), false);
+>     }
+>     reload_requested = 1;
+>     cpu_stop_current();
+>     qemu_notify_event();
+> }
+> #endif
+> 
+> 
+1757a1798,1803
+> #ifdef CONFIG_PROCESSOR_TRACE
+>     if (kvm_enabled()) {
+>         hypercall_unlock();
+>         pt_disable(qemu_get_cpu(0), false);
+>     }
+> #endif
+1814a1861,1867
+> #ifdef CONFIG_PROCESSOR_TRACE
+>     if (kvm_enabled()) {
+>         hypercall_unlock();
+>         pt_disable(qemu_get_cpu(0), false);
+>     }
+> #endif
+> 
+1847a1901,1911
+> #ifdef CONFIG_PROCESSOR_TRACE
+>     if (qemu_reload_requested()){
+>         if(loadvm_global){
+>             vm_stop(RUN_STATE_RESTORE_VM);
+>             if (load_vmstate(loadvm_global) == 0){
+>                 vm_start();
+>             }
+>             return false; 
+>         }   
+>     }
+> #endif
+1907c1971
+<     printf("QEMU emulator version " QEMU_VERSION QEMU_PKGVERSION "\n"
+---
+>     printf("QEMU-PT emulator version " QEMU_VERSION QEMU_PKGVERSION "  (kAFL)\n"
+3627a3692,3694
+> #ifdef CONFIG_PROCESSOR_TRACE
+>                 loadvm_global = (char*)optarg;
+> #endif

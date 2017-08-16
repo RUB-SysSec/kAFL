@@ -1,0 +1,42 @@
+# Copyright (C) 2017 Sergej Schumilo
+# 
+# This file is part of QEMU-PT (kAFL).
+# 
+# QEMU-PT is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+# 
+# QEMU-PT is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with QEMU-PT.  If not, see <http://www.gnu.org/licenses/>.
+370a371,395
+> #ifdef CONFIG_PROCESSOR_TRACE
+>     volatile int pt_cmd;
+>     volatile uint64_t pt_arg;
+>     volatile int pt_ret;
+>     volatile bool pt_enabled;
+> 
+>     int pt_fd;
+>     void* pt_mmap;
+> 
+>     volatile uint32_t overflow_counter;
+>     volatile uint64_t trace_size;
+> 
+>     uint64_t pt_features;
+> 
+>     volatile bool pt_ip_filter_enabled[4];
+>     uint64_t pt_ip_filter_a[4];
+>     uint64_t pt_ip_filter_b[4];
+>     void* pt_decoder_state[4];
+>     uint64_t pt_c3_filter;
+> 
+>     FILE *pt_target_file;
+>     bool reload_pending;
+> 
+> #endif
+> 

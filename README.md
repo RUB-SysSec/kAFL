@@ -4,9 +4,13 @@ Blazing fast x86-64 VM kernel fuzzing framework with performat VM reloads for Li
 
 Published at USENIX Security 2017.
 
-Code coming soon! Stay stuned!
+### Currently missing: 
 
-BibTex:
+- full documentation
+- agents for macOS and Windows (except for our test driver)
+
+
+## BibTex:
 ```
 @inproceedings{schumilo2017kafl,
     author = {Schumilo, Sergej and Aschermann, Cornelius and Gawlik, Robert and Schinzel, Sebastian and Holz, Thorsten},

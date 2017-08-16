@@ -1,0 +1,30 @@
+# Copyright (C) 2017 Sergej Schumilo
+# 
+# This file is part of QEMU-PT (kAFL).
+# 
+# QEMU-PT is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+# 
+# QEMU-PT is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with QEMU-PT.  If not, see <http://www.gnu.org/licenses/>.
+145a146
+> obj-$(CONFIG_PROCESSOR_TRACE) += pt/memory_access.o pt/decoder.o pt/tnt_cache.o pt/disassembler.o pt/logger.o pt/hypercall.o pt/filter.o pt.o pt/interface.o
+150c151
+< LIBS := $(libs_softmmu) $(LIBS)
+---
+> LIBS := $(libs_softmmu) $(LIBS) -lcapstone
+165c166
+< GENERATED_FILES += hmp-commands.h hmp-commands-info.h
+---
+> GENERATED_FILES += hmp-commands.h hmp-commands-info.h hmp-commands-pt.h
+218a220,222
+> 
+> hmp-commands-pt.h: $(SRC_PATH)/hmp-commands-pt.hx
+> 	$(call quiet-command,sh $(SRC_PATH)/scripts/hxtool -h < $< > $@,"  GEN   $(TARGET_DIR)$@")

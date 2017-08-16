@@ -1,0 +1,110 @@
+# Copyright (C) 2017 Sergej Schumilo
+# 
+# This file is part of KVM-PT (kAFL).
+# 
+# QEMU-PT is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+# 
+# QEMU-PT is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with QEMU-PT.  If not, see <http://www.gnu.org/licenses/>.
+2689a2690,2695
+> #ifdef CONFIG_KVM_VMX_PT
+> 	case KVM_VMX_PT_SUPPORTED: {
+> 		r = kvm_x86_ops->vmx_pt_enabled();
+> 		break;
+> 	}
+> #endif
+3498a3505,3510
+> #ifdef CONFIG_KVM_VMX_PT
+> 	case KVM_VMX_PT_SETUP_FD: {
+> 		r = kvm_x86_ops->setup_trace_fd(vcpu);
+> 		break;
+> 	}
+> #endif
+5970a5983,6003
+> #ifdef CONFIG_KVM_VMX_PT
+> 	/* kAFL Hypercall Interface (ring 0) */
+> 	if(kvm_x86_ops->get_cpl(vcpu) == 0) {
+> 		r = 0;
+> 		if (kvm_register_read(vcpu, VCPU_REGS_RAX) == HYPERCALL_KAFL_RAX_ID){
+> 			switch(kvm_register_read(vcpu, VCPU_REGS_RBX)){
+> 				case 8: /* PANIC */   
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_PANIC;    
+> 					break;
+> 				case 9: /* KASAN */ 
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_KASAN; 
+> 					break;
+> 				default:
+> 					r = -KVM_EPERM;   
+> 					break;   
+> 			}
+> 			return r;
+> 		}
+> 	}
+> #endif
+> 
+5971a6005,6061
+> 		/* kAFL Hypercall interface */
+> 		#ifdef CONFIG_KVM_VMX_PT
+> 		if (kvm_register_read(vcpu, VCPU_REGS_RAX) == HYPERCALL_KAFL_RAX_ID){
+> 			r = 0;
+> 			switch(kvm_register_read(vcpu, VCPU_REGS_RBX)){
+> 				case 0:  /* KAFL_GUEST_ACQUIRE */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_ACQUIRE;
+> 					break;
+> 				case 1:  /* KAFL_GUEST_GET_PAYLOAD */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_GET_PAYLOAD;
+> 					vcpu->run->hypercall.args[0] = kvm_register_read(vcpu, VCPU_REGS_RCX);
+> 					break;
+> 				case 2:  /* KAFL_GUEST_GET_PROGRAM */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_GET_PROGRAM;
+> 					vcpu->run->hypercall.args[0] = kvm_register_read(vcpu, VCPU_REGS_RCX);
+> 					break;
+> 				case 3: /* KAFL_GUEST_GET_ARGV */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_GET_ARGV;
+> 					vcpu->run->hypercall.args[0] = kvm_register_read(vcpu, VCPU_REGS_RCX);
+> 					break;
+> 				case 4: /* KAFL_GUEST_RELEASE */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_RELEASE;
+> 					break;
+> 				case 5: /* KAFL_GUEST_SUBMIT_CR3 */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_SUBMIT_CR3;
+> 					vcpu->run->hypercall.args[0] = kvm_read_cr3(vcpu);
+> 					break;
+> 				case 6: /* KAFL_GUEST_PANIC */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_SUBMIT_PANIC;
+> 					vcpu->run->hypercall.args[0] = kvm_register_read(vcpu, VCPU_REGS_RCX); 
+> 					break;
+> 				case 7: /* KAFL_GUEST_KASAN */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_SUBMIT_KASAN;
+> 					vcpu->run->hypercall.args[0] = kvm_register_read(vcpu, VCPU_REGS_RCX); 
+> 					break;
+> 				case 10: /* LOCK */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_LOCK;
+> 					break;
+> 				case 11: /* INFO */    
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_INFO;
+>                     vcpu->run->hypercall.args[0] = kvm_register_read(vcpu, VCPU_REGS_RCX);
+> 					break;
+> 				case 12: /* KAFL_GUEST_NEXT_PAYLOAD */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_NEXT_PAYLOAD;
+> 					break;
+> 				case 13: /* KAFL_GUEST_DEBUG */
+> 					vcpu->run->exit_reason = KVM_EXIT_KAFL_DEBUG;
+> 					vcpu->run->hypercall.args[0] = kvm_register_read(vcpu, VCPU_REGS_RCX);
+> 					break;
+> 				default:
+> 					r = -KVM_EPERM;
+> 					break;
+> 			}
+> 			return r;
+> 		}
+> 		#endif
+> 

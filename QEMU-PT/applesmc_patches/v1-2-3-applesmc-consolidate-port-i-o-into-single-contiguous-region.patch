@@ -1,0 +1,82 @@
+diff --git a/hw/misc/applesmc.c b/hw/misc/applesmc.c
+index 986f2ac..e581e02 100644
+--- a/hw/misc/applesmc.c
++++ b/hw/misc/applesmc.c
+@@ -75,8 +75,7 @@ typedef struct AppleSMCState AppleSMCState;
+ struct AppleSMCState {
+     ISADevice parent_obj;
+ 
+-    MemoryRegion io_data;
+-    MemoryRegion io_cmd;
++    MemoryRegion io_reg;
+     uint32_t iobase;
+     uint8_t cmd;
+     uint8_t status;
+@@ -207,19 +206,36 @@ static void qdev_applesmc_isa_reset(DeviceState *dev)
+     applesmc_add_key(s, "MSSD", 1, "\0x3");
+ }
+ 
+-static const MemoryRegionOps applesmc_data_io_ops = {
+-    .write = applesmc_io_data_write,
+-    .read = applesmc_io_data_read,
+-    .endianness = DEVICE_NATIVE_ENDIAN,
+-    .impl = {
+-        .min_access_size = 1,
+-        .max_access_size = 1,
+-    },
+-};
++static void applesmc_io_write(void *opaque, hwaddr addr, uint64_t val,
++                              unsigned size)
++{
++    switch (addr) {
++    case APPLESMC_DATA_PORT:
++        applesmc_io_data_write(opaque, addr, val, size);
++        break;
++    case APPLESMC_CMD_PORT:
++        applesmc_io_cmd_write(opaque, addr, val, size);
++        break;
++    default:
++        break;
++    }
++}
+ 
+-static const MemoryRegionOps applesmc_cmd_io_ops = {
+-    .write = applesmc_io_cmd_write,
+-    .read = applesmc_io_cmd_read,
++static uint64_t applesmc_io_read(void *opaque, hwaddr addr, unsigned size)
++{
++    switch (addr) {
++    case APPLESMC_DATA_PORT:
++        return applesmc_io_data_read(opaque, addr, size);
++    case APPLESMC_CMD_PORT:
++        return applesmc_io_cmd_read(opaque, addr, size);
++    default:
++        return 0xff;
++    }
++}
++
++static const MemoryRegionOps applesmc_io_ops = {
++    .write = applesmc_io_write,
++    .read = applesmc_io_read,
+     .endianness = DEVICE_NATIVE_ENDIAN,
+     .impl = {
+         .min_access_size = 1,
+@@ -231,15 +247,9 @@ static void applesmc_isa_realize(DeviceState *dev, Error **errp)
+ {
+     AppleSMCState *s = APPLE_SMC(dev);
+ 
+-    memory_region_init_io(&s->io_data, OBJECT(s), &applesmc_data_io_ops, s,
+-                          "applesmc-data", 4);
+-    isa_register_ioport(&s->parent_obj, &s->io_data,
+-                        s->iobase + APPLESMC_DATA_PORT);
+-
+-    memory_region_init_io(&s->io_cmd, OBJECT(s), &applesmc_cmd_io_ops, s,
+-                          "applesmc-cmd", 4);
+-    isa_register_ioport(&s->parent_obj, &s->io_cmd,
+-                        s->iobase + APPLESMC_CMD_PORT);
++    memory_region_init_io(&s->io_reg, OBJECT(s), &applesmc_io_ops, s,
++                          "applesmc", APPLESMC_NUM_PORTS);
++    isa_register_ioport(&s->parent_obj, &s->io_reg, s->iobase);
+ 
+     if (!s->osk || (strlen(s->osk) != 64)) {
+         fprintf(stderr, "WARNING: Using AppleSMC with invalid key\n");
