@@ -334,7 +334,7 @@ class qemu:
             self.control.settimeout(1.25)
         try:
             result = self.control.recv(1)
-        except socket_error, e:
+        except socket_error as e:
             return 2
 
         if result == 'C':
@@ -515,4 +515,3 @@ class qemu:
             self.control.recv(1)
         except:
             log_qemu("finalize_iteration failed...", self.qemu_id)
-
