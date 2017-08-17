@@ -214,7 +214,7 @@ def ask_for_purge(data):
         # Check for matching character
         if(data[i] == input_char):
             i += 1
-            print("\r" + FAIL + data[:i] + ENDC + (len(data)-i)*'_', end="")
+            print("\r" + FAIL + data[:i] + ENDC + (len(data)-i)*'_', end=" ")
 
         # Check if we are done here ...
         if i == len(data):
