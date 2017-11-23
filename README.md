@@ -1,6 +1,6 @@
 # kAFL: Hardware-Assisted Feedback Fuzzing for OS Kernels
 
-Blazing fast x86-64 VM kernel fuzzing framework with performat VM reloads for Linux, MacOS and Windows.
+Blazing fast x86-64 VM kernel fuzzing framework with performant VM reloads for Linux, MacOS and Windows.
 
 Published at USENIX Security 2017.
 
