@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with QEMU-PT.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
 import time
 import os
 from common.config import InfoConfiguration
@@ -43,7 +44,7 @@ def start():
     q.__del__()
     try:
         for line in open("/tmp/kAFL_info.txt"):
-            print line,
+            print(line, end=" ")
         os.remove("/tmp/kAFL_info.txt")
     except:
         pass
