@@ -26,6 +26,11 @@ from multiprocessing import Manager
 
 __author__ = 'sergej'
 
+try:
+    xrange          # Python 2
+except NameError:
+    xrange = range  # Python 3
+
 def hexdump(src, length=16):
     hexdump_filter = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])
     lines = []
