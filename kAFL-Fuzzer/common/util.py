@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with QEMU-PT.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
 from shutil import copyfile
 from common.debug import logger
 import sys, tty, termios, time, os
@@ -165,11 +166,11 @@ def print_pre_exit_msg(num_dots, clrscr=False):
         dots += " "
 
     if clrscr:
-        print '\x1b[2J'
-    print '\x1b[1;1H' + '\x1b[1;1H' + '\033[0;33m' + "[*] Terminating Slaves" + dots + '\033[0m' + "\n"
+        print('\x1b[2J')
+    print('\x1b[1;1H' + '\x1b[1;1H' + '\033[0;33m' + "[*] Terminating Slaves" + dots + '\033[0m' + "\n")
 
 def print_exit_msg():
-    print '\x1b[2J' + '\x1b[1;1H' + '\033[92m' + "[!] Data saved! Bye!" + '\033[0m' + "\n"
+    print('\x1b[2J' + '\x1b[1;1H' + '\033[92m' + "[!] Data saved! Bye!" + '\033[0m' + "\n")
 
 def is_float(value):
     try:
@@ -213,7 +214,7 @@ def ask_for_purge(data):
         # Check for matching character
         if(data[i] == input_char):
             i += 1
-            print("\r" + FAIL + data[:i] + ENDC + (len(data)-i)*'_'),
+            print("\r" + FAIL + data[:i] + ENDC + (len(data)-i)*'_', end=" ")
 
         # Check if we are done here ...
         if i == len(data):
