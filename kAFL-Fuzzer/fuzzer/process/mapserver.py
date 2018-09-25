@@ -20,7 +20,7 @@ along with QEMU-PT.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import time
 
-import mmh3, base64, lz4
+import mmh3, base64, lz4.frame
 import collections
 
 from fuzzer.communicator import send_msg, recv_msg, Communicator
@@ -146,7 +146,7 @@ class MapserverProcess:
         for payload in self.ring_buffers[slave_id]:
             data.append(base64.b64encode(payload))
         with open(target, 'w') as outfile:
-            outfile.write(lz4.block.compress(json.dumps(data)))
+            outfile.write(lz4.frame.compress(json.dumps(data)))
 
     def __check_hash(self, new_hash, bitmap, payload, crash, timeout, kasan, slave_id, reloaded, performance, qid, pos):
         self.ring_buffers[slave_id].append(str(payload))
